@@ -1,13 +1,13 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: %i[show edit update destroy]
   before_action :is_an_authorized_user, only: [:show, :index]
+  before_action :is_comment_author, only: [:edit]
 
   def index
     raise ActiveRecord::RecordNotFound, "Not authorized"
   end
 
   def show
-    # Nothing needed here, before_action handles 404
   end
 
   def new
@@ -61,6 +61,12 @@ class CommentsController < ApplicationController
 
   def is_an_authorized_user
     raise ActiveRecord::RecordNotFound, "Not authorized to view comment"
+  end
+
+  def is_comment_author
+    unless @comment.author == current_user
+      redirect_back fallback_location: root_url, alert: "You're not authorized for that"
+    end
   end
 
   def comment_params
