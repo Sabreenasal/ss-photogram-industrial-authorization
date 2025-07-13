@@ -1,0 +1,17 @@
+<div class="pending-follow-requests">
+  <% return unless current_user == user %>
+
+  <h5>Pending Requests</h5>
+  <% if user.pending_follow_requests.any? %>
+    <ul>
+      <% user.pending_follow_requests.each do |request| %>
+        <li>
+          <%= request.sender.username %> wants to follow you
+
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No pending requests.</p>
+  <% end %>
+</div>
