@@ -1,4 +1,9 @@
 class ApplicationController < ActionController::Base
+  include Pundit::Authorization
+
+  after_action :verify_policy_scoped, only: :index, unless: :devise_controller?
+ after_action :verify_policy_scoped, if: -> { action_name == 'index' && !devise_controller? }
+
     # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
     allow_browser versions: :modern
 
@@ -16,6 +21,8 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:sign_up, keys: [ :username, :private, :name, :bio, :website, :avatar_image ])
     devise_parameter_sanitizer.permit(:account_update, keys: [ :username, :private, :name, :bio, :website, :avatar_image ])
   end
+
+rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
 
