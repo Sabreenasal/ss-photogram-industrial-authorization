@@ -68,7 +68,7 @@ class User < ApplicationRecord
     uniqueness: true,
     format: {
       with: /\A[\w_\.]+\z/i,
-      message: "can only contain letters, numbers, periods, and underscores"
+      message: "can only contain letters, numbers, periods, and underscores",
     }
 
   validates :website, url: { allow_blank: true }
@@ -83,14 +83,17 @@ class User < ApplicationRecord
 
   def ensure_website_has_scheme
     if website.present? &&
-      !website.starts_with?("http://") &&
-      !website.starts_with?("https://")
-
+       !website.starts_with?("http://") &&
+       !website.starts_with?("https://")
       self.website = "http://" + self.website
     end
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    [ "username" ]
+    ["username"]
+  end
+
+  def pending_follow_requests
+    FollowRequest.where(recipient: self, status: "pending")
   end
 end

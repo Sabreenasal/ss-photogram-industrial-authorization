@@ -9,9 +9,11 @@
     <%= follow_request.sender_id %>
   </p>
 
-  <p>
-    <strong>Status:</strong>
-    <%= follow_request.status %>
-  </p>
+  <% if current_user == follow_request.sender || current_user == follow_request.recipient %>
+    <p>
+      <strong>Status:</strong>
+      <%= follow_request.status %>
+    </p>
+  <% end %>
 
 </div>
