@@ -1,26 +1,17 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show liked feed discover ]
+  before_action :ensure_current_user, only: [:feed, :discover]
 
   def index
     @users = @q.result
   end
 
   def feed
-    if @user != current_user
-      flash[:alert] = "You're not authorized for that"
-      redirect_to root_path
-    else
-      @feed_photos = current_user.feed
-    end
+    @feed_photos = current_user.feed
   end
 
   def discover
-    if @user != current_user
-      flash[:alert] = "You're not authorized for that"
-      redirect_to root_path
-    else
-      @discover_photos = current_user.discover
-    end
+    @discover_photos = current_user.discover
   end
 
   private
@@ -30,6 +21,12 @@ class UsersController < ApplicationController
       @user = User.find_by!(username: params.fetch(:username))
     else
       @user = current_user
+    end
+  end
+
+  def ensure_current_user
+    if current_user != @user
+      redirect_back fallback_location: root_url, alert: "You're not authorized for that"
     end
   end
 end
